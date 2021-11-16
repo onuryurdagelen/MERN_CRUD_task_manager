@@ -1,0 +1,8 @@
+.grid {
+    height: 95vh;
+    padding: 1rem;
+  }
+  .grid-column {
+    max-width: 450px;
+  }
+  

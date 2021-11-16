@@ -1,9 +1,21 @@
-import React from 'react';
-import { NavLink } from 'react-router-dom';
+import React, { useEffect } from 'react';
+import { Link, NavLink } from 'react-router-dom';
+import { useSelector, useDispatch, connect } from 'react-redux';
+import { deleteTask, getTasks } from '../redux/actions/taskActions';
 
 const SingleTask = props => {
+  const deleteTaskHandler = () => {
+    props.deleteTask(props._id, props.tasks);
+  };
+
+  useEffect(() => {}, []);
+
   return (
-    <div className={`single-task ${props.completed && 'task-completed'}`}>
+    <div
+      key={props.key}
+      className={`single-task ${props.completed && 'task-completed'}`}
+      data-id={props._id}
+    >
       <h5>
         <span>
           <i className='far fa-check-circle'></i>
@@ -11,15 +23,27 @@ const SingleTask = props => {
         {props.task}
       </h5>
       <div className='task-links'>
-        <NavLink to='/edit-task' className='edit-link' onClick={props.onEdit}>
+        <NavLink to={`/edit-task/${props._id}`} className='edit-link'>
           <i className='fas fa-edit'></i>
         </NavLink>
-        <button type='button' className='delete-btn' onClick={props.delete}>
+        <button
+          type='button'
+          className='delete-btn'
+          onClick={deleteTaskHandler}
+        >
           <i className='fas fa-trash'></i>
         </button>
       </div>
     </div>
   );
 };
-
-export default SingleTask;
+const mapStateToProps = state => {
+  return {
+    id: state.tasks.id,
+    tasks: state.tasks.tasks.tasks,
+    isLoading: state.tasks.isLoading,
+    message: state.tasks.message,
+    response: state.tasks.response,
+  };
+};
+export default connect(mapStateToProps, { deleteTask })(SingleTask);

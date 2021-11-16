@@ -1,42 +1,35 @@
 import React, { useEffect, useRef, useState } from 'react';
-import axios from 'axios';
-const TaskForm = () => {
-  const inputRef = useRef(null);
+import { getTasks } from '../redux/actions/taskActions';
+import { useSelector, useDispatch, connect } from 'react-redux';
+const TaskForm = props => {
   const [name, setName] = useState('');
 
-  const createTask = async () => {
-    try {
-      const { data } = await axios.post('http://localhost:5000/api/v1/tasks', {
+  const addTaskHandler = e => {
+    e.preventDefault();
+    fetch('http://localhost:5000/api/v1/tasks', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({
         name,
-      });
-      console.log(data);
-    } catch (error) {}
+      }),
+    });
   };
-  const handleChange = e => {
-    e.preventDefault();
-    setName(e.target.value);
-    inputRef.current = name;
-  };
-  const handleSubmit = e => {
-    e.preventDefault();
-    createTask();
-  };
-  useEffect(() => {
-    createTask();
-  }, [name]);
+  useEffect(() => {}, []);
+
   return (
     <React.Fragment>
-      <form className='task-form' onSubmit={handleSubmit}>
+      <form className='task-form' onSubmit={addTaskHandler}>
         <h4>task manager</h4>
         <div className='form-control'>
           <input
             type='text'
-            ref={inputRef}
             name='name'
             className='task-input'
             placeholder='e.g. wash dishes'
-            onChange={handleChange}
             value={name}
+            onChange={e => setName(e.target.value)}
           />
           <button type='submit' className='btn submit-btn'>
             submit
@@ -48,4 +41,10 @@ const TaskForm = () => {
   );
 };
 
-export default TaskForm;
+const mapStateToProps = state => {
+  return {
+    tasks: state.tasks.tasks.tasks,
+    isLoading: state.isLoading,
+  };
+};
+export default connect(mapStateToProps, { getTasks })(TaskForm);

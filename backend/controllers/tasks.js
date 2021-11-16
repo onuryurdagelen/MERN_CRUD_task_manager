@@ -24,14 +24,13 @@ const getSingleTask = async (req, res) => {
 
     //eğer id uzunluğu var olan karakter uzunluğu ile aynı ise fakat bazı karakterler farklı ise aşağıdaki hatayı alırız.
     if (!singleTask) {
-      console.log('girdi 1');
+      // console.log('girdi 1');
       return res.status(404).json({ message: `No task with id: ${taskID}` });
     }
-    console.log('girdi 2');
+    // console.log('girdi 2');
     res.status(200).json({ success: true, task: singleTask });
   } catch (error) {
     //ID'nin karakter veya syntax hatası olduğunda döner.
-    console.log('girdi 3');
     console.log('Error: ', error.message);
     res.status(500).json({ success: false, message: error.message });
   }
@@ -58,17 +57,15 @@ const updateTask = async (req, res) => {
       runValidators: true,
     });
 
-    console.log(task);
-
     if (!task) {
       return res
         .status(404)
         .json({ success: false, message: `No task with id: ${taskID}` });
     }
-    res.status(200).json({ task });
+    res.status(200).json({ name: task.name, completed: task.completed });
   } catch (error) {
     //ID'nin karakter veya syntax hatası olduğunda döner.
-    console.log('girdi 3');
+    // console.log('girdi 3');
     console.log('Error: ', error.message);
     res.status(500).json({ success: false, message: error.message });
   }
@@ -76,19 +73,19 @@ const updateTask = async (req, res) => {
 
 const deleteTask = async (req, res) => {
   try {
-    const { id: taskID } = req.params;
-    const task = await Task.findOneAndDelete({ _id: taskID });
+    const { id } = req.body;
+    const _task = await Task.findByIdAndDelete({ _id: id });
 
     //const targetId = AllTasks.findIndex(target => String(target._id) === id);
     //console.log(targetId)
 
-    if (!task) {
+    if (!_task) {
       return res
         .status(404)
-        .json({ success: false, message: `No task with id: ${taskID}` });
+        .json({ success: false, message: `No task with id: ${id}` });
     }
     //console.log("Filtered Task: ",filteredTasks)
-    res.status(200).json({ success: true, task });
+    res.status(200).json({ id });
   } catch (error) {
     res.status(500).json({ success: false, message: error.message });
   }
